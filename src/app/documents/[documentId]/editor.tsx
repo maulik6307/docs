@@ -16,6 +16,10 @@ import FontFamily from '@tiptap/extension-font-family'
 import TextStyle from '@tiptap/extension-text-style'
 import { Color } from '@tiptap/extension-color'
 import Highlight from '@tiptap/extension-highlight'
+import Link from '@tiptap/extension-link'
+import TextAlign from '@tiptap/extension-text-align'
+import { FontSizeExtension } from '@/extensions/font-size'
+import { LineHeightExtension } from '@/extensions/line-height'
 
 const Editor = () => {
 
@@ -54,8 +58,16 @@ const Editor = () => {
     },
     extensions: [
       StarterKit,
+      TextAlign.configure({ types: ["heading", "paragraph", "table", "image"] }),
       FontFamily,
+      FontSizeExtension,
+      LineHeightExtension.configure({ types: ["heading", "paragraph"], defaultLineHeight: "normal" }),
       Color,
+      Link.configure({
+        openOnClick: false,
+        autolink: true,
+        defaultProtocol: "https"
+      }),
       Highlight.configure({ multicolor: true }),
       TextStyle,
       Underline,
