@@ -60,13 +60,13 @@ const Ruler = () => {
         setRightMargin(56)
     }
     return (
-        <div className='h-6 border-b border-gray-300 flex items-end relative select-none print:hidden'
+        <div className='max-w-[816px] mx-auto h-6 border-b border-gray-300 flex items-end relative select-none print:hidden'
             ref={rulerRef}
             onMouseMove={handleMouseMove}
             onMouseUp={handleMouseUp}
             onMouseLeave={handleMouseUp}
         >
-            <div id='ruler-container' className='max-w-[816px] mx-auto w-full h-full relative'>
+            <div id='ruler-container' className='w-full h-full relative'>
                 <Marker position={leftMargin} isLeft={true} isDragging={isDraggingLeft} onMouseDown={handleLeftMouseDown} onDoubleClick={handleLeftDoubleClick} />
                 <Marker position={rightMargin} isLeft={false} isDragging={isDraggingRight} onMouseDown={handleRightMouseDown} onDoubleClick={handleRightDoubleClick} />
                 <div className='absolute inset-x-0 bottom-0 h-full'>
