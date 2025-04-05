@@ -1,6 +1,7 @@
 
 import React from 'react'
 import Navbar from './navbar'
+import TemplateGallery from './templete-gallery'
 
 export default function page() {
   return (
@@ -9,7 +10,7 @@ export default function page() {
         <Navbar />
       </div>
       <div className='mt-16'>
-        page
+        <TemplateGallery />
       </div>
     </div>
   )
