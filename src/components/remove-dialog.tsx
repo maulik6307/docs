@@ -5,6 +5,7 @@ import { Id } from '../../convex/_generated/dataModel'
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from './ui/alert-dialog';
 import { useMutation } from 'convex/react';
 import { api } from '../../convex/_generated/api';
+import { toast } from 'sonner';
 interface RemoveDialogProps {
     documentId: Id<"documents">;
     children: React.ReactNode;
@@ -29,6 +30,10 @@ const RemoveDialog = ({ documentId, children }: RemoveDialogProps) => {
                         e.stopPropagation()
                         setIsRemoving(true)
                         remove({ id: documentId })
+                            .catch((err) => toast.error(err.message))
+                            .then(() => {
+                                toast.success("Document deleted successfully")
+                            })
                             .finally(() => {
                                 setIsRemoving(false)
                             })
