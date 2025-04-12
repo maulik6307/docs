@@ -1,4 +1,5 @@
 "use client"
+import { useMutation, useStorage } from '@liveblocks/react'
 import React, { useRef, useState } from 'react'
 import { FaCaretDown } from "react-icons/fa"
 
@@ -6,8 +7,16 @@ import { FaCaretDown } from "react-icons/fa"
 const markers = Array.from({ length: 83 }, (_, i) => i)
 
 const Ruler = () => {
-    const [leftMargin, setLeftMargin] = useState(56)
-    const [rightMargin, setRightMargin] = useState(56)
+
+    const leftMargin = useStorage((root) => root.leftMargin) ?? 56
+    const setLeftMargin = useMutation(({ storage }, position: number) => {
+        storage.set("leftMargin", position)
+    }, [])
+
+    const rightMargin = useStorage((root) => root.rightMargin) ?? 56
+    const setRightMargin = useMutation(({ storage }, position: number) => {
+        storage.set("rightMargin", position)
+    }, [])
 
     const [isDraggingLeft, setIsDraggingLeft] = useState(false)
     const [isDraggingRight, setIsDraggingRight] = useState(false)

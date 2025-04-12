@@ -7,9 +7,41 @@ import { Menubar, MenubarContent, MenubarItem, MenubarMenu, MenubarSeparator, Me
 import { BoldIcon, FileIcon, FileJsonIcon, FilePenIcon, FilePlus, FilePlusIcon, FileTextIcon, GlobeIcon, ItalicIcon, Menu, PrinterIcon, Redo2Icon, RemoveFormattingIcon, StrikethroughIcon, TableIcon, TextIcon, TrashIcon, UnderlineIcon, Undo2Icon } from 'lucide-react'
 import { BsFilePdf } from 'react-icons/bs'
 import { useEditorStore } from '@/store/use-editor-store'
+import { OrganizationSwitcher, UserButton } from '@clerk/nextjs'
+import { Avatars } from './avatars'
+import Inbox from './inbox'
+import { Doc } from '../../../../convex/_generated/dataModel'
+import { useMutation } from 'convex/react'
+import { api } from '../../../../convex/_generated/api'
+import { useRouter } from 'next/navigation'
+import { toast } from 'sonner'
+import RemoveDialog from '@/components/remove-dialog'
+import RenameDialog from '@/components/rename-dialog'
 
-const Navbar = () => {
+interface NavbarProps {
+    data: Doc<"documents">
+}
+
+const Navbar = ({ data }: NavbarProps) => {
+    const router = useRouter()
     const { editor } = useEditorStore()
+
+    const mutation = useMutation(api.documents.create)
+
+    const onNewDocument = () => {
+        mutation(
+            {
+                title: "Untitled Document",
+                initialContent: ""
+            }
+        ).catch(() => toast.error("Something went wrong"))
+            .then(
+                (id) => {
+                    toast.success("Document created successfully")
+                    router.push(`/documents/${id}`)
+                }
+            )
+    }
 
     const insertTable = ({ rows, cols }: { rows: number, cols: number }) => {
         editor?.chain().focus().insertTable({ rows, cols, withHeaderRow: false }).run()
@@ -28,21 +60,21 @@ const Navbar = () => {
         if (!editor) return
         const content = editor.getJSON()
         const blob = new Blob([JSON.stringify(content)], { type: 'application/json' })
-        onDownload(blob, 'document.json') //TODO: change name
+        onDownload(blob, `${data.title}.json`)
     }
 
     const onSaveHTML = () => {
         if (!editor) return
         const content = editor.getHTML()
         const blob = new Blob([content], { type: 'text/html' })
-        onDownload(blob, 'document.html') //TODO: change name
+        onDownload(blob, `${data.title}.html`)
     }
 
     const onSaveText = () => {
         if (!editor) return
         const content = editor.getText()
         const blob = new Blob([content], { type: 'text/plain' })
-        onDownload(blob, 'document.txt') //TODO: change name
+        onDownload(blob, `${data.title}.txt`)
     }
     return (
         <nav className='flex items-center justify-between'>
@@ -51,7 +83,7 @@ const Navbar = () => {
                     <Image src="/logo.svg" alt="logo" width={36} height={36} />
                 </Link>
                 <div className='flex flex-col'>
-                    <DocumentInput />
+                    <DocumentInput title={data.title} id={data._id} />
                     <div className='flex flex-col'>
                         <Menubar className='border-none bg-transparent shadow-none h-auto p-0'>
                             <MenubarMenu>
@@ -83,19 +115,29 @@ const Navbar = () => {
                                             </MenubarItem>
                                         </MenubarSubContent>
                                     </MenubarSub>
-                                    <MenubarItem>
+                                    <MenubarItem onClick={onNewDocument}>
                                         <FilePlusIcon className='mr-2 h-4 w-4' />
                                         New Document
                                     </MenubarItem>
                                     <MenubarSeparator />
-                                    <MenubarItem>
-                                        <FilePenIcon className='mr-2 h-4 w-4' />
-                                        Rename
-                                    </MenubarItem>
-                                    <MenubarItem>
-                                        <TrashIcon className='mr-2 h-4 w-4' />
-                                        Remove
-                                    </MenubarItem>
+                                    <RenameDialog documentId={data._id} initialTitle={data.title}>
+                                        <MenubarItem
+                                            onClick={(e) => e.stopPropagation()}
+                                            onSelect={(e) => e.preventDefault()}
+                                        >
+                                            <FilePenIcon className='mr-2 h-4 w-4' />
+                                            Rename
+                                        </MenubarItem>
+                                    </RenameDialog>
+                                    <RemoveDialog documentId={data._id}>
+                                        <MenubarItem
+                                            onClick={(e) => e.stopPropagation()}
+                                            onSelect={(e) => e.preventDefault()}
+                                        >
+                                            <TrashIcon className='mr-2 h-4 w-4' />
+                                            Remove
+                                        </MenubarItem>
+                                    </RemoveDialog>
                                     <MenubarSeparator />
                                     <MenubarItem onClick={() => window.print()}>
                                         <PrinterIcon className='mr-2 h-4 w-4' />
@@ -183,6 +225,17 @@ const Navbar = () => {
                         </Menubar>
                     </div>
                 </div>
+            </div>
+            <div className='flex gap-3 items-center pl-6'>
+                <Avatars />
+                <Inbox />
+                <OrganizationSwitcher
+                    afterCreateOrganizationUrl="/"
+                    afterLeaveOrganizationUrl='/'
+                    afterSelectOrganizationUrl={"/"}
+                    afterSelectPersonalUrl={"/"}
+                />
+                <UserButton />
             </div>
         </nav>
     )
