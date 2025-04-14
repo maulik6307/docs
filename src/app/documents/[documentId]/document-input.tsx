@@ -58,9 +58,9 @@ const DocumentInput = ({ title, id }: DocumentInputProps) => {
 
     }
 
-    const showLoader = isPending || status === "connecting" || status === "reconnecting"
+    // const showLoader = isPending || status === "connecting" || status === "reconnecting"
 
-    const showError = status === "disconnected"
+    // const showError = status === "disconnected"
 
     return (
         <div className='flex items-center gap-2'>
@@ -91,7 +91,8 @@ const DocumentInput = ({ title, id }: DocumentInputProps) => {
                     </span>
                 )
             }
-            {
+            <BsCloudCheck className='size-4' />
+            {/* {
                 !showError && !showLoader && (
                     <BsCloudCheck className='size-4' />
                 )
@@ -104,7 +105,7 @@ const DocumentInput = ({ title, id }: DocumentInputProps) => {
             {
                 showError && (
                     <BsCloudSlash className='size-4' />
-                )}
+                )} */}
         </div>
     )
 }

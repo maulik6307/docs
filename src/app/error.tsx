@@ -36,7 +36,7 @@ const ErrorPage = ({ error, reset }: { error: Error & { digest?: string }; reset
                     className='font-medium px-6'
                 >
                     <Link href={"/"}>
-                        Go backe
+                        Go back
                     </Link>
                 </Button>
             </div>
